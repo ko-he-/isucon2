@@ -84,17 +84,17 @@ def top_page():
 def artist_page(artist_id):
     cur = get_db().cursor()
 
-    cur.execute('SELECT id, name FROM artist WHERE id = %s LIMIT 1', artist_id)
+    cur.execute('SELECT id, name FROM artist WHERE id = %s LIMIT 1' %  artist_id)
     artist = cur.fetchone()
 
-    cur.execute('SELECT id, name FROM ticket WHERE artist_id = %s', artist_id)
+    cur.execute('SELECT id, name FROM ticket WHERE artist_id = %s' % artist_id)
     tickets = cur.fetchall()
 
     for ticket in tickets:
         cur.execute(
             '''SELECT COUNT(*) AS cnt FROM variation
                 INNER JOIN stock ON stock.variation_id = variation.id
-                WHERE variation.ticket_id = %s AND stock.order_id IS NULL''',
+                WHERE variation.ticket_id = %s AND stock.order_id IS NULL''' %
             ticket['id']
         )
         ticket['count'] = cur.fetchone()['cnt']
@@ -113,20 +113,20 @@ def ticket_page(ticket_id):
     cur = get_db().cursor()
     
     cur.execute(
-        'SELECT t.*, a.name AS artist_name FROM ticket t INNER JOIN artist a ON t.artist_id = a.id WHERE t.id = %s LIMIT 1',
+        'SELECT t.*, a.name AS artist_name FROM ticket t INNER JOIN artist a ON t.artist_id = a.id WHERE t.id = %s LIMIT 1' %
         ticket_id
     )
     ticket = cur.fetchone()
 
     cur.execute(
-        'SELECT id, name FROM variation WHERE ticket_id = %s',
+        'SELECT id, name FROM variation WHERE ticket_id = %s' %
         ticket_id
     )
     variations = cur.fetchall()
 
     for variation in variations:
         cur.execute(
-            'SELECT seat_id, order_id FROM stock WHERE variation_id = %s',
+            'SELECT seat_id, order_id FROM stock WHERE variation_id = %s' %
             variation['id']
         )
         stocks = cur.fetchall()
@@ -135,7 +135,7 @@ def ticket_page(ticket_id):
             variation['stock'][row['seat_id']] = row['order_id']
 
         cur.execute(
-            'SELECT COUNT(*) AS cunt FROM stock WHERE variation_id = %s AND order_id IS NULL',
+            'SELECT COUNT(*) AS cunt FROM stock WHERE variation_id = %s AND order_id IS NULL' %
             variation['id']
         )
         variation['vacancy'] = cur.fetchone()['cunt']
@@ -155,17 +155,17 @@ def buy_page():
     db = get_db()
     cur = db.cursor()
     cur.execute(
-        'INSERT INTO order_request (member_id) VALUES (%s)',
+        'INSERT INTO order_request (member_id) VALUES (%s)' %
         (member_id)
     )
     order_id = db.insert_id()
     rows = cur.execute(
-        'UPDATE stock SET order_id = %s WHERE variation_id = %s AND order_id IS NULL ORDER BY RAND() LIMIT 1',
+        'UPDATE stock SET order_id = %s WHERE variation_id = %s AND order_id IS NULL ORDER BY RAND() LIMIT 1' %
         (order_id, variation_id)
     )
     if rows > 0:
         cur.execute(
-            'SELECT seat_id FROM stock WHERE order_id = %s LIMIT 1',
+            'SELECT seat_id FROM stock WHERE order_id = %s LIMIT 1' %
             (order_id)
         );
         stock = cur.fetchone()
