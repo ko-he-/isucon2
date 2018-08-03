@@ -10,12 +10,12 @@ var init = exports.init = function(teams, callback){
 };
 
 var Storage = exports.Storage = function(host, port, user, password, database){
-  this.db = {host:host, port:port, user:user, password:password, database:database};
+  this.db = {host: host, port: port, user: user, password: password, database: database};
   this.status = {}; // teamid -> {id:x, name:'', display:'', recent:{}, highscore:{}}
 };
 
 Storage.prototype.client = function(){
-  return mysql.createClient(this.db);
+  return mysql.createConnection(this.db);
 };
 
 var RESULT_FIELDS = 'teamid,failed,score,tickets,soldouts,soldoutAt,gets,posts,errors,timeouts,detail,inserted_at';
