@@ -155,7 +155,7 @@ def buy_page():
     db = get_db()
     cur = db.cursor()
     cur.execute(
-        'INSERT INTO order_request (member_id) VALUES (%s)' %
+        'INSERT INTO order_request (member_id) VALUES ("%s")' %
         (member_id)
     )
     order_id = db.insert_id()
